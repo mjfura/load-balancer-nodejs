@@ -1,0 +1,75 @@
+version: "3.9"
+
+services:
+  lb:
+    container_name: load_balancer
+    image: haproxy
+    ports:
+      - "80:80"
+    volumes:
+      - ./haproxy:/usr/local/etc/haproxy
+    links:
+      - server_prod_1
+      - server_prod_2
+      - server_prod_3
+  server_prod_1:
+    container_name: server_prod_1
+    env_file:
+      - .env
+    build: .
+    command: sh -c "pnpm run build && pnpm start"
+    environment:
+      DB_URI: mongodb://db_prod:$MONGO_PROD_LOCAL_PORT/$MONGO_PROD_DATABASE
+      PORT: 1001
+      NODE_ENV: production
+      APPID: 1001
+    volumes:
+      - ./api-rest-docker:/usr/src/app
+    links:
+      - db_prod
+  server_prod_2:
+    container_name: server_prod_2
+    env_file:
+      - .env
+    build: .
+    command: sh -c "pnpm run build && pnpm start"
+    environment:
+      DB_URI: mongodb://db_prod:$MONGO_PROD_LOCAL_PORT/$MONGO_PROD_DATABASE
+      PORT: 2002
+      NODE_ENV: production
+      APPID: 2002
+    volumes:
+      - ./api-rest-docker:/usr/src/app
+    links:
+      - db_prod
+  server_prod_3:
+    container_name: server_prod_3
+    env_file:
+      - .env
+    build: .
+    command: sh -c "pnpm run build && pnpm start"
+    environment:
+      DB_URI: mongodb://db_prod:$MONGO_PROD_LOCAL_PORT/$MONGO_PROD_DATABASE
+      PORT: 3003
+      NODE_ENV: production
+      APPID: 3003
+    volumes:
+      - ./api-rest-docker:/usr/src/app
+    links:
+      - db_prod
+  db_prod:
+    container_name: db_prod
+    image: mongo
+    env_file:
+      - .env
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: $MONGO_PROD_USERNAME
+      MONGO_INITDB_ROOT_PASSWORD: $MONGO_PROD_PASSWORD
+      MONGO_INITDB_DATABASE: $MONGO_PROD_DATABASE
+    ports:
+      - $MONGO_PROD_LOCAL_PORT:$MONGO_PROD_REMOTE_PORT
+    restart: always
+    volumes:
+      - data:/data/db
+volumes:
+  data:

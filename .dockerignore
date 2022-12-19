@@ -1,0 +1,12 @@
+api-rest-docker/node_modules
+api-rest-docker/npm-debug.log
+api-rest-docker/Dockerfile*
+api-rest-docker/docker-compose*
+api-rest-docker/.dockerignore
+api-rest-docker/.git
+api-rest-docker/.gitignore
+api-rest-docker/README.md
+api-rest-docker/LICENSE
+api-rest-docker/.vscode
+api-rest-docker/build
+api-rest-docker/dist
